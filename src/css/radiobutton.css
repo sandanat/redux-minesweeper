@@ -1,0 +1,18 @@
+.radio-buttons > input[type="radio"] {
+  display: none;
+}
+
+.radio-buttons > label {
+  display: inline-block;
+  cursor: pointer;
+  background: #ccc;
+  border: 3px outset #ccc;
+  border-radius: 6px;
+  box-shadow: 3px 3px 6px rgba(0,0,0,0.25);
+  padding: 0.1em 0.5em;
+}
+
+.radio-buttons > input[type="radio"]:checked + label {
+  border-style: inset;
+  box-shadow: inset 3px 3px 10px rgba(0,0,0,0.25);
+}
