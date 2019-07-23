@@ -1,6 +1,6 @@
 /* Page Styles */
 
-button {
+button1 {/*todo*/
   display: inline-block;
   cursor: pointer;
   padding: 1em 2em;
@@ -14,7 +14,7 @@ button {
   margin-top: 4em;
 }
 
-button:hover {
+button:hover1 {/*todo*/
   background-color: #155580;
 }
 

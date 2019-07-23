@@ -9,8 +9,8 @@ export default () => createStore(
    timerAction: null,
    config: {
      rowsQty: 16,
-     colsQty: 30,
-     minesQty: 99,
+     colsQty: 16,
+     minesQty: 40,
      useCellQuestionMark: true
    },
    cellsGrid: [[]]

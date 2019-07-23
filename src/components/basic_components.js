@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import $ from 'jquery';
 
 import constants from '../modules/constants';
 import getGridRowsAndColsQty from '../modules/get_grid_rows_and_cols_qty'
@@ -10,6 +11,7 @@ let consts = {...constants};
 
 // empty or mine cell
 class FieldCell extends React.Component {
+  cellRef = React.createRef();
 
   // shouldComponentUpdate is used to improve perfomance by avoiding immutable cells rendering.
   // PureComponent doesn't work because comparison of functions
@@ -21,6 +23,21 @@ class FieldCell extends React.Component {
     ) return false;
 
     return true;
+  }
+
+  componentDidMount() {
+    let self = this;
+
+    // emitate pushed effect while button is pressed
+    $(this.cellRef.current).bind('mousedown', event => {
+      if(self.props.cell.isOpened) return;
+      $(event.target).addClass('test-todo')  
+    });
+    
+    $(this.cellRef.current).bind('mouseout', event => {
+      if(self.props.cell.isOpened) return;
+      $(event.target).removeClass('test-todo')  
+    });
   }
 
   render() {
@@ -50,17 +67,18 @@ class FieldCell extends React.Component {
     }
 
     return (
-      <td
+      <div
         className={
           "field-cell " +
-          (cell.isOpened ? "field-cell-opened " : "field-cell-closed ") +
-          (cell.isOpened && cell.isMined ? "field-cell-opened-mined " : " ")
+          (cell.isOpened ? "field-cell-opened " : "field-cell-closed") +
+          (cell.isOpened && cell.isMined ? "field-cell-opened-mined" : " ")
         }
         onClick={this.props.handleLeftClick}
         onContextMenu={this.props.handleRightClick}
+        ref={this.cellRef}
       >
         {child}
-      </td>
+      </div>
     );
   }
 }
@@ -79,9 +97,9 @@ FieldCell.propTypes = {
 // row with required cols qty
 function FieldRow({ children }) {
   return (
-    <tr className="field-row">
+    <div className="field-row">
       {children}
-    </tr>
+    </div>
   );
 }
 
@@ -126,11 +144,9 @@ function GameField({ cellsGrid, handleLeftClick, handleRightClick }) {
   }
 
   return (
-    <table className="game-field">
-      <tbody>
-        {rowsArr}
-      </tbody>
-    </table>
+    <div className="game-field">
+      {rowsArr}
+    </div>
   );
 }
 

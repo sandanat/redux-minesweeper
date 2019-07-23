@@ -3,7 +3,7 @@ import constants from '../modules/constants';
 export const config = (state = { config: {} }, action) => {
   switch (action.type) {
     case constants.game.UPDATE_ROWS_AND_COLS_QTY:
-      return {...state, ...action.payload};
+      return {...state, config: {...action.payload} };
     
     case constants.toggle.UPDATE_QUESTION_MARK_ACCESS:
       return { ...state, useCellQuestionMark: action.payload };

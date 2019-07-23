@@ -144,7 +144,7 @@ class Game extends React.Component {
       timerAction = this.gameIsWon() ? 'stop' : 'launch';
       this.props.updateCellsGrid(updatedCellsGrid);
     }
-    
+
     this.props.setTimerAction(timerAction);
   }
 
@@ -206,29 +206,16 @@ class Game extends React.Component {
   }
 
   openMines() {
-   this.props.cellsGrid.forEach( (rowCells, i) => {
-      rowCells.forEach( (cell, z) => {
+    let updatedCellsGrid = this.props.cellsGrid.map(rowCells => {
+      return rowCells.map(cell => {
         if (cell.isMined && cell.mark !== constants.marks.FLAG) cell.isOpened = true;
 
-        setTimeout(
-          () => this.props.updateCellsGrid(this.props.cellsGrid),
-          10 * (z + i)
-        );
-      });
-    });
+        return cell;
+      })
+    })
+
+    this.props.updateCellsGrid(updatedCellsGrid);
   }
-
-  // openMines() {
-  //   let updatedCellsGrid = this.props.cellsGrid.map(rowCells => {
-  //     return rowCells.map(cell => {
-  //       if (cell.isMined && cell.mark !== constants.marks.FLAG) cell.isOpened = true;
-
-  //       return cell;
-  //     })
-  //   })
-
-  //   this.props.updateCellsGrid(updatedCellsGrid);
-  // }
 
   getMinesRemainQty() {
     if (this.gameIsWon()) return 0;
@@ -248,32 +235,57 @@ class Game extends React.Component {
 
 
   render() {
-    return (
-      <div>
-        <GameField
-          handleLeftClick={this.openCell}
-          handleRightClick={this.markCell}
-          cellsGrid={this.props.cellsGrid}
-        />
-        <footer>
-          <Timer />
-          {/* eslint-disable-next-line */}
-          <a
-            className="reset-game"
+    let header =
+      <header>
+
+        <div className="grid-1-2">
+          <button
+            className="reset-game game-button"
             href="#"
             onClick={this.initiateGame}
           >
             <i className="fa fa-redo" aria-hidden="true" />
-          </a>
+          </button>
+        </div>
+
+        <div className="grid-1-2">
+          <button
+            className="config-game game-button"
+            onClick={() => {}}
+          >
+            <i className="fa fa-cog" aria-hidden="true" />
+          </button>
+        </div>
+
+      </header>;
+
+    let footer =
+      <footer>
+        <div className="grid-1-2">
+          <Timer />
+        </div>
+
+        <div className="grid-1-2">
           <div className="mines-qty">
-            <i className="fa fa-bomb" aria-hidden="true"></i>
             <input
               type="text"
               value={this.getMinesRemainQty()}
               readOnly
             />
+            <i className="fa fa-bomb" aria-hidden="true"></i>
           </div>
-        </footer>
+        </div>
+      </footer>;
+
+    return (
+      <div>
+        {header}
+        <GameField
+          handleLeftClick={this.openCell}
+          handleRightClick={this.markCell}
+          cellsGrid={this.props.cellsGrid}
+        />
+        {footer}
       </div>
     );
   }

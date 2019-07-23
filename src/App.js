@@ -16,16 +16,11 @@ const configFormPromise = import(
 const ConfigForm = React.lazy(() => configFormPromise);
 
 const App = () => (
-  <React.Fragment>
-    <Game
-      cellsGrid={[[{}, {}]]}
-      config={{minesQty: 0}}
+  <Game
+    cellsGrid={[[{}, {}]]}
+    config={{ minesQty: 0 }}
 
-    />
-    <React.Suspense fallback={<div>Loading...</div>}>
-      <ConfigForm showModal={false} />
-    </React.Suspense>
-  </React.Fragment>
+  />
 );
 
 export default App;
