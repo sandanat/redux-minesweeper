@@ -1,4 +1,4 @@
-const constants = {
+export default {
   marks: {
     FLAG: 'FLAG',
     QUESTION: 'QUESTION',
@@ -12,9 +12,10 @@ const constants = {
     UPDATE_ROWS_AND_COLS_QTY: "UPDATE_ROWS_AND_COLS_QTY",
     UPDATE_CELLS_GRID: "UPDATE_CELLS_GRID"
   },
+  configForm: {
+    TOGGLE_CONFIG_FORM: "TOGGLE_CONFIG_FORM"
+  },
   toggle: {
     UPDATE_QUESTION_MARK_ACCESS: "UPDATE_QUESTION_MARK_ACCESS"
   }
-}
-
-export default constants;
+};

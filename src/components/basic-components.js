@@ -1,13 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import $ from 'jquery';
 
-import constants from '../modules/constants';
-import getGridRowsAndColsQty from '../modules/get_grid_rows_and_cols_qty'
-
-// constants are undefined in FieldCell.render without this
-// todo перепроверить
-let consts = {...constants};
+import consts from '../modules/constants';
+import getGridRowsAndColsQty from '../modules/get-grid-rows-and-cols-qty'
 
 // empty or mine cell
 class FieldCell extends React.Component {
@@ -23,21 +18,6 @@ class FieldCell extends React.Component {
     ) return false;
 
     return true;
-  }
-
-  componentDidMount() {
-    let self = this;
-
-    // emitate pushed effect while button is pressed
-    $(this.cellRef.current).bind('mousedown', event => {
-      if(self.props.cell.isOpened) return;
-      $(event.target).addClass('test-todo')  
-    });
-    
-    $(this.cellRef.current).bind('mouseout', event => {
-      if(self.props.cell.isOpened) return;
-      $(event.target).removeClass('test-todo')  
-    });
   }
 
   render() {
@@ -89,7 +69,7 @@ FieldCell.propTypes = {
     mark: PropTypes.string,
     isMined: PropTypes.bool,
     minesQty: PropTypes.number
-  }).isRequired,
+  }),
   handleLeftClick: PropTypes.func.isRequired,
   handleRightClick: PropTypes.func.isRequired
 }

@@ -6,12 +6,8 @@ import PropTypes from 'prop-types'
 class Timer extends React.Component {
   constructor(props) {
     super(props);
-
-    this.launch = this.launch.bind(this);
+    
     this.tick = this.tick.bind(this);
-    this.stop = this.stop.bind(this);
-    this.reset = this.reset.bind(this);
-    this._clearInterval = this._clearInterval.bind(this);
   }
 
   // clear resources

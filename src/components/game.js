@@ -1,11 +1,9 @@
-
-// не поправлено
 import React from 'react';
 import PropTypes from 'prop-types';
 
 import constants from '../modules/constants';
-import randomInteger from '../modules/random_integer'
-import { GameField } from './basic_components';
+import randomInteger from '../modules/random-integer'
+import { GameField } from './basic-components';
 import Timer from '../containers/timer'
 
 class Game extends React.Component {
@@ -130,9 +128,9 @@ class Game extends React.Component {
   openCell(rowInd, colInd, event) {
     let updatedCellsGrid = [...this.props.cellsGrid];
 
-    let cell = (updatedCellsGrid[rowInd] || {})[colInd];
+    let cell = updatedCellsGrid[rowInd][colInd];
 
-    if (!cell || cell.isOpened || cell.mark !== constants.marks.NONE) return;
+    if (cell.isOpened || cell.mark !== constants.marks.NONE) return;
 
     if (this.gameIsLost()) return;
     if (this.gameIsWon()) return;
@@ -150,6 +148,7 @@ class Game extends React.Component {
 
     let timerAction;
 
+    // todo 
     if (this.gameIsLost()) {
       this.openMines();
       timerAction = 'stop';
@@ -264,7 +263,7 @@ class Game extends React.Component {
         <div className="grid-1-2">
           <button
             className="config-game game-button"
-            onClick={() => {}}
+            onClick={this.props.openConfigForm}
           >
             <i className="fa fa-cog" aria-hidden="true" />
           </button>
@@ -313,7 +312,8 @@ Game.propTypes = {
     useCellQuestionMark: PropTypes.bool.isRequired
   }),
   setTimerAction: PropTypes.func.isRequired,
-  updateCellsGrid: PropTypes.func.isRequired
+  updateCellsGrid: PropTypes.func.isRequired,
+  openConfigForm: PropTypes.func.isRequired
 };
 
 export default Game;

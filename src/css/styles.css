@@ -1,5 +1,4 @@
 /* font is required for fontawesome */
-
 @font-face {
   font-family: "Font Awesome";
   src: url("https://use.fontawesome.com/releases/v5.0.13/webfonts/fa-solid-900.woff2");
@@ -15,7 +14,7 @@ body {
   text-align: center;
 }
 
-body > div > div {
+#root > div {
   display: inline-block;
   margin-top: 4%;
   padding: 13px;
@@ -55,10 +54,6 @@ body > div > div {
 .field-cell-opened {
   background-color: rgb(207, 208, 209);
   cursor: default;
-}
-
-.test-todo {
-  background-color: rgb(207, 208, 209) !important;
 }
 
 .field-cell-opened-mined {

@@ -1,14 +1,14 @@
 import { connect } from 'react-redux';
 
 import Toggle from '../components/toggle';
-import { updateQuestionMarkAccess } from '../actions/toggle';
+import { updateCheckbox } from '../actions/toggle';
 
 const mapStateToProps = state => ({
   checked: state.config.useCellQuestionMark
 });
 
 const mapDispatchToProps = dispatch => ({
-  updateQuestionMarkAccess: bool => dispatch(updateQuestionMarkAccess(bool))
+  updateQuestionMarkAccess: bool => dispatch(updateCheckbox(bool))
 });
 
 export default connect(

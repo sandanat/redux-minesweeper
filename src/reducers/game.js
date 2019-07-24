@@ -1,12 +1,13 @@
 import constants from '../modules/constants';
 
-export const config = (state = { config: {} }, action) => {
+// todo
+export const config = (state = { }, action) => {
   switch (action.type) {
-    case constants.game.UPDATE_ROWS_AND_COLS_QTY:
-      return {...state, config: {...action.payload} };
+//     case constants.game.UPDATE_ROWS_AND_COLS_QTY:
+//       return {...state, config: {...action.payload} };
     
-    case constants.toggle.UPDATE_QUESTION_MARK_ACCESS:
-      return { ...state, useCellQuestionMark: action.payload };
+//     case constants.toggle.UPDATE_QUESTION_MARK_ACCESS:
+//       return { ...state, useCellQuestionMark: action.payload };
 
     default:
       return state;

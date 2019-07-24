@@ -1,32 +1,21 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import Modal from 'react-modal';
 
-class Modal extends React.Component {
-  constructor(props) {
-    super(props);
+// Make sure to bind modal to your appElement
+// (http://reactcommunity.org/react-modal/accessibility/)
+Modal.setAppElement('#root');
 
-    this.modalRoot = document.getElementById('root');
-    this.modal = document.createElement('div'); // todo заменить на JSX
-  }
-
-  componentDidMount() {
-    console.log('modal did mount');
-    this.modalRoot.appendChild(this.modal);
-  }
-  
-  componentWillUnmount() {
-    console.log('modal will unmount');
-    this.modalRoot.removeChild(this.modal);
-  }
-
+class ModalForm extends React.Component {
   render() {
-    return this.props.showModal ?
-      ReactDOM.createPortal(
-        this.props.children,
-        this.modal
-      ) :
-      null
+    return (
+      <Modal
+        isOpen={this.props.modalIsOpen}
+        onRequestClose={this.props.closeModal}
+      >
+        {this.props.children}
+      </Modal>
+    );
   }
 }
 
-export default Modal;
+export default ModalForm;
