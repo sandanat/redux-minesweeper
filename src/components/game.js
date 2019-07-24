@@ -6,7 +6,6 @@ import PropTypes from 'prop-types';
 import constants from '../modules/constants';
 import randomInteger from '../modules/random_integer'
 import { GameField } from './basic_components';
-import Toggle from '../containers/toggle';
 import Timer from '../containers/timer'
 
 class Game extends React.Component {
@@ -22,8 +21,7 @@ class Game extends React.Component {
     this.initiateGame();
   }
 
-  initiateGame(_event) {
-    _event && _event.preventDefault();
+  initiateGame() {
 
     let { rowsQty, colsQty } = { ...this.props.config };
     let cellsGrid = this.getCellsGrid(rowsQty, colsQty)
@@ -81,33 +79,46 @@ class Game extends React.Component {
 
         if (cell.isMined) continue;
 
-        let upperCellsArr = [
-          (calculatedCellsGrid[ri - 1] || {})[ci - 1],
-          (calculatedCellsGrid[ri - 1] || {})[ci],
-          (calculatedCellsGrid[ri - 1] || {})[ci + 1]
-        ];
-        let lowerCellsArr = [
-          (calculatedCellsGrid[ri + 1] || {})[ci - 1],
-          (calculatedCellsGrid[ri + 1] || {})[ci],
-          (calculatedCellsGrid[ri + 1] || {})[ci + 1]
-        ];
-        let sideCellsArr = [
-          (calculatedCellsGrid[ri] || {})[ci - 1],
-          (calculatedCellsGrid[ri] || {})[ci + 1]
-        ];
-        let resultCellsArr = [
-          ...upperCellsArr,
-          ...lowerCellsArr,
-          ...sideCellsArr
-        ]
+        let cellPerimeterCells = this.getCellPerimeterCells(
+          ri,
+          ci,
+          calculatedCellsGrid
+        );
 
-        cell.minesQty = resultCellsArr.filter(cell => {
+        cell.minesQty = cellPerimeterCells.filter(cell => {
           return cell && cell.isMined;
         }).length;
       }
     }
 
     return calculatedCellsGrid;
+  }
+
+  // get cells surrounding a cell
+  getCellPerimeterCells(rowInd, colInd, cellsGrid) {
+    cellsGrid = cellsGrid || this.props.cellsGrid;
+    let result = [];
+
+    for (let cell, cellI = 0; cellI < 9; cellI++) {
+      let perimCellRowInd = rowInd - ((Math.floor(cellI / 3) - 1));
+      let perimCellColInd = colInd - (((cellI % 3) - 1));
+      let row = cellsGrid[perimCellRowInd];
+
+      if(row) {
+        cell = row[perimCellColInd];
+        
+        if(
+          cell &&
+          (perimCellColInd !== colInd || perimCellRowInd !== rowInd)
+        )  {
+          cell.rowInd = perimCellRowInd;
+          cell.colInd = perimCellColInd;
+          result.push(cell);
+        }
+      }
+    }
+
+    return result;
   }
 
   /**
@@ -130,9 +141,11 @@ class Game extends React.Component {
 
     // recursively open group of cells with zero mines qty around
     if (!cell.minesQty && !cell.isMined) {
-      for (let cellI = 0; cellI < 9; cellI++) {
-        this.openCell(rowInd - ((Math.floor(cellI / 3) - 1)), colInd - (((cellI % 3) - 1)));
-      }
+      let cellPerimeterCells = this.getCellPerimeterCells(rowInd, colInd);
+
+      cellPerimeterCells.forEach(cell =>
+        this.openCell(cell.rowInd, cell.colInd)
+      );
     }
 
     let timerAction;
@@ -291,11 +304,16 @@ class Game extends React.Component {
   }
 }
 
-// Game.propTypes = { todo
-//   cellsGrid
-//   config
-//   setTimerAction
-//   updateCellsGrid
-// }
+Game.propTypes = {
+  cellsGrid: PropTypes.array.isRequired,
+  config: PropTypes.shape({
+    rowsQty: PropTypes.number.isRequired,
+    colsQty: PropTypes.number.isRequired,
+    minesQty: PropTypes.number.isRequired,
+    useCellQuestionMark: PropTypes.bool.isRequired
+  }),
+  setTimerAction: PropTypes.func.isRequired,
+  updateCellsGrid: PropTypes.func.isRequired
+};
 
 export default Game;
