@@ -1,17 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
-function Radiobutton({ id, text, checked }) {
-  const radiobuttonRef = useRef(null);
-
-  useEffect(() => {
-    radiobuttonRef.current.checked = !!checked;
-  });
-
+function Radiobutton({ id, text }) {
   return (
-    <div className="radio-buttons">
+    <div className="radio-button">
       <input
-        ref={radiobuttonRef}
         type="radio"
         name={`radio-button-${id}`}
         id={id} />

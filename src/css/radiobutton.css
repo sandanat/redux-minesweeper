@@ -1,0 +1,36 @@
+.radio-button {
+  display: inline-block;
+}
+
+.radio-button > input[type="radio"] {
+  display: none;
+}
+
+.radio-button > label {
+  display: inline-block;
+  cursor: pointer;
+  border: 2px solid rgb(77, 74, 74);
+  box-sizing: content-box;
+  padding: 0.1em 0.5em;
+}
+
+.radio-button:nth-child(1) label {
+  border-radius: 15px 0 0 15px;
+}
+
+.radio-button:nth-child(even) label {
+  border-left-width: 0px;
+  border-right-width: 0px;
+}
+
+.radio-button:last-of-type label {
+  border-radius: 0 15px 15px 0;
+}
+
+.radio-button > label:hover {
+  background-color: rgba(172, 164, 164, .5);
+}
+
+.radio-button > input[type="radio"]:checked + label {
+  background-color: #2ecc71;
+}

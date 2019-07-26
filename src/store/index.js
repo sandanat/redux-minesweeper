@@ -8,13 +8,14 @@ export default () => createStore(
     timerSeconds: 0,
     timerAction: null,
     configForm: {
-      isOpen: false
+      isOpen: false,
+      useCellQuestionMark: false
     },
     config: {
       rowsQty: 9,
       colsQty: 9,
       minesQty: 10,
-      useCellQuestionMark: true
+      useCellQuestionMark: false
     },
     cellsGrid: [[]]
   },
