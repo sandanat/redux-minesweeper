@@ -1,13 +1,34 @@
 import constants from '../modules/constants';
 
-// todo
 export const config = (state = {}, action) => {
   switch (action.type) {
-    //     case constants.game.UPDATE_ROWS_AND_COLS_QTY:
-    //       return {...state, config: {...action.payload} };
+    case constants.game.UPDATE_ROWS_COLS_MINES :
+      let rowsQty, colsQty, minesQty;
+      let useCellQuestionMark = action.isUseQuestionMark;
+      
+      switch(action.level) {
+        case 'junior' :
+          rowsQty = 9;
+          colsQty = 9;
+          minesQty = 10;
+          break;
 
-    //     case constants.toggle.UPDATE_QUESTION_MARK_ACCESS:
-    //       return { ...state, useCellQuestionMark: action.payload };
+        case 'middle' :
+          rowsQty = 16;
+          colsQty = 16;
+          minesQty = 40;
+          break;
+
+        case 'seniour' :
+          rowsQty = 16;
+          colsQty = 30;
+          minesQty = 99;
+          break;
+
+        default:
+          break;
+      }
+      return { useCellQuestionMark, rowsQty, colsQty, minesQty };
 
     default:
       return state;
@@ -17,7 +38,7 @@ export const config = (state = {}, action) => {
 export const cellsGrid = (state = [[]], action) => {
   switch (action.type) {
     case constants.game.UPDATE_CELLS_GRID:
-      return action.payload;
+      return action.cellsGrid;
 
     default:
       return state;

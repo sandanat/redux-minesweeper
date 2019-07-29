@@ -9,12 +9,13 @@ export default () => createStore(
     timerAction: null,
     configForm: {
       isOpen: false,
-      useCellQuestionMark: false
+      useCellQuestionMark: false,
+      selectedLevel: 'middle'
     },
     config: {
       rowsQty: 16,
       colsQty: 30,
-      minesQty: 40,
+      minesQty: 99,
       useCellQuestionMark: false
     },
     cellsGrid: [[]]

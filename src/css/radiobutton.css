@@ -9,7 +9,7 @@
 .radio-button > label {
   display: inline-block;
   cursor: pointer;
-  border: 2px solid rgb(77, 74, 74);
+  border: 2px solid rgba(77, 74, 74, .3);
   box-sizing: content-box;
   padding: 0.1em 0.5em;
 }
@@ -32,5 +32,5 @@
 }
 
 .radio-button > input[type="radio"]:checked + label {
-  background-color: #2ecc71;
+  background-color: rgba(71, 71, 245, 0.466);
 }

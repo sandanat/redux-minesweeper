@@ -132,8 +132,9 @@ class Game extends React.Component {
 
     if (cell.isOpened || cell.mark !== constants.marks.NONE) return;
 
-    if (this.gameIsLost()) return;
-    if (this.gameIsWon()) return;
+    let gameStatus = this.getGameStatus();
+
+    if (gameStatus.isLost || gameStatus.isWon) return;
 
     cell.isOpened = true;
 
@@ -147,13 +148,14 @@ class Game extends React.Component {
     }
 
     let timerAction;
+    gameStatus = this.getGameStatus();
 
     // todo 
-    if (this.gameIsLost()) {
+    if (gameStatus.isLost) {
       this.openMines();
       timerAction = 'stop';
     } else {
-      timerAction = this.gameIsWon() ? 'stop' : 'launch';
+      timerAction = gameStatus.isWon ? 'stop' : 'launch';
       this.props.updateCellsGrid(updatedCellsGrid);
     }
 
@@ -168,8 +170,9 @@ class Game extends React.Component {
   */
   markCell(rowInd, colInd, event) {
     event.preventDefault(); // disable context menu rendering
+    let gameStatus = this.getGameStatus();
 
-    if (this.gameIsWon() || this.gameIsLost()) return;
+    if (gameStatus.isWon || gameStatus.isLost) return;
 
     let updatedCellsGrid = [...this.props.cellsGrid];
 
@@ -192,27 +195,26 @@ class Game extends React.Component {
     this.props.updateCellsGrid(updatedCellsGrid);
   }
 
-  gameIsLost() {
-    for (let rowCells of this.props.cellsGrid) {
-      for (let cell of rowCells) {
-        if (cell.isMined && cell.isOpened) return true;
-      }
-    }
-
-    return false;
-  }
-
-  gameIsWon() {
+  getGameStatus() {
+    let result = {
+      isWon: false,
+      isLost: false
+    };
     let openedCells = [];
 
     for (let rowCells of this.props.cellsGrid) {
       for (let cell of rowCells) {
+        if (cell.isMined && cell.isOpened) {
+          result.isLost = true;
+          return result;
+        }
+
         if (cell.isOpened) openedCells.push(cell);
       }
     }
 
     let { rowsQty, colsQty } = { ...this.props.config };
-    let result = (rowsQty * colsQty - this.props.config.minesQty) === openedCells.length;
+    result.isWon = (rowsQty * colsQty - this.props.config.minesQty) === openedCells.length;
 
     return result;
   }
@@ -230,7 +232,7 @@ class Game extends React.Component {
   }
 
   getMinesRemainQty() {
-    if (this.gameIsWon()) return 0;
+    if (this.getGameStatus().isWon) return 0;
 
     let checkedMinesQty = 0;
 

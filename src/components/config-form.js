@@ -8,7 +8,10 @@ function ConfigForm({
   modalIsOpen,
   closeModal,
   useCellQuestionMark,
-  toggleUseCellQuestionMark
+  toggleUseCellQuestionMark,
+  selectedGameLevel,
+  selectLevel,
+  updateGameConfig
 }) {
   return (
     <Modal
@@ -26,15 +29,24 @@ function ConfigForm({
           <div className="level-difficulty">
             <span>Уровень</span><br />
             <Radiobutton
-              id="9-9-10"
+              name="radio-button-game-level"
+              id="junior"
               text="9x9, 10 мин"
-            />
+              checkedId={selectedGameLevel}
+              onChangeHandler={selectLevel}
+              />
             <Radiobutton
-              id="16-16-40"
+              name="radio-button-game-level"
+              id="middle"
               text="16x16, 40 мин"
-            />
+              checkedId={selectedGameLevel}
+              onChangeHandler={selectLevel}
+              />
             <Radiobutton
-              id="16-30-99"
+              name="radio-button-game-level"
+              checkedId={selectedGameLevel}
+              onChangeHandler={selectLevel}
+              id="seniour"
               text="16x30, 99 мин"
             />
           </div>
@@ -54,7 +66,12 @@ function ConfigForm({
         </div>
         <footer>
           <hr />
-          <button className="save-button">Сохранить</button>
+          <button
+            className="save-button"
+            onClick={() => updateGameConfig(true, 'junior')} // todo
+          >
+            Сохранить
+          </button>
           <button onClick={closeModal}>Закрыть</button>
         </footer>
       </div>
