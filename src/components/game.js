@@ -256,7 +256,7 @@ class Game extends React.Component {
             href="#"
             onClick={this.initiateGame}
           >
-            <i className="fa fa-redo" aria-hidden="true" />
+            <i className="fa fa-repeat" aria-hidden="true" />
           </button>
         </div>
 
@@ -279,12 +279,8 @@ class Game extends React.Component {
 
         <div className="grid-1-2">
           <div className="mines-qty">
-            <input
-              type="text"
-              value={this.getMinesRemainQty()}
-              readOnly
-            />
             <i className="fa fa-bomb" aria-hidden="true"></i>
+            <span>{this.getMinesRemainQty()}</span>
           </div>
         </div>
       </footer>;

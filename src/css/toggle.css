@@ -1,7 +1,7 @@
 .toggle-checkbox {
   user-select: none;
-  text-align: left;
   position: relative;
+  margin-top: 15px;
 }
 
 .toggle-checkbox span {

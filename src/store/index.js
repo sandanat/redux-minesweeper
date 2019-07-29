@@ -12,9 +12,9 @@ export default () => createStore(
       useCellQuestionMark: false
     },
     config: {
-      rowsQty: 9,
-      colsQty: 9,
-      minesQty: 10,
+      rowsQty: 16,
+      colsQty: 30,
+      minesQty: 40,
       useCellQuestionMark: false
     },
     cellsGrid: [[]]

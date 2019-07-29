@@ -14,7 +14,7 @@
   padding: 0.1em 0.5em;
 }
 
-.radio-button:nth-child(1) label {
+.radio-button:first-of-type label {
   border-radius: 15px 0 0 15px;
 }
 

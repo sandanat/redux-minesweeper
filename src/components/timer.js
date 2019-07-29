@@ -56,12 +56,8 @@ class Timer extends React.Component {
   render() {
     return (
       <div className="timer">
-        <i className="fa fa-clock" aria-hidden="true"></i>
-        <input
-          type="text"
-          value={this.props.seconds}
-          readOnly
-        />
+        <i className="fa fa-clock-o" aria-hidden="true"></i>
+        <span>{this.props.seconds}</span>
       </div>
     );
   }
