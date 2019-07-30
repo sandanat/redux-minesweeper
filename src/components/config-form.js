@@ -11,19 +11,35 @@ function ConfigForm({
   toggleUseCellQuestionMark,
   selectedGameLevel,
   selectLevel,
-  updateGameConfig
+  saveFormButtonHandler
 }) {
+
+  const modalStules = {
+    overlay: {
+      backgroundColor: "rgba(255, 239, 213, 0.7)",
+    },
+    content: {
+      position: "relative",
+      top: '100px',
+      left: "0",
+      right: "0",
+      transition: "all 3s ease-in"
+    }
+  };
+
+
   return (
     <Modal
       modalIsOpen={modalIsOpen}
       closeModal={closeModal}
+      customStyles={modalStules}
     >
       <div className="config-modal">
         <header>
           <h1>
             Настройки
         </h1>
-        <hr />
+          <hr />
         </header>
         <div>
           <div className="level-difficulty">
@@ -34,14 +50,14 @@ function ConfigForm({
               text="9x9, 10 мин"
               checkedId={selectedGameLevel}
               onChangeHandler={selectLevel}
-              />
+            />
             <Radiobutton
               name="radio-button-game-level"
               id="middle"
               text="16x16, 40 мин"
               checkedId={selectedGameLevel}
               onChangeHandler={selectLevel}
-              />
+            />
             <Radiobutton
               name="radio-button-game-level"
               checkedId={selectedGameLevel}
@@ -68,7 +84,7 @@ function ConfigForm({
           <hr />
           <button
             className="save-button"
-            onClick={() => updateGameConfig(true, 'junior')} // todo
+            onClick={saveFormButtonHandler}
           >
             Сохранить
           </button>

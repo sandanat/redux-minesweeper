@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import constants from '../modules/constants';
 import randomInteger from '../modules/random-integer'
+import getGridSize from '../modules/get-grid-rows-and-cols-qty'
 import { GameField } from './basic-components';
 import Timer from '../containers/timer'
 
@@ -17,6 +18,18 @@ class Game extends React.Component {
 
   componentDidMount() {
     this.initiateGame();
+  }
+
+  componentDidUpdate() {
+    let {rowsQty: currRowsQty, colsQty: currColsQty} = getGridSize(
+      this.props.cellsGrid
+    );
+
+    if(
+      currRowsQty && currColsQty && 
+      (currRowsQty !== this.props.config.rowsQty ||
+      currColsQty !== this.props.config.colsQty)
+    ) this.initiateGame();
   }
 
   initiateGame() {
@@ -125,6 +138,7 @@ class Game extends React.Component {
    * @param {number} colInd cell column coordinate
    * @param {object} event click event
    */
+  // todo refactor this, too expensive operation
   openCell(rowInd, colInd, event) {
     let updatedCellsGrid = [...this.props.cellsGrid];
 
@@ -134,9 +148,11 @@ class Game extends React.Component {
 
     let gameStatus = this.getGameStatus();
 
-    if (gameStatus.isLost || gameStatus.isWon) return;
+    if (gameStatus.isLost || !gameStatus.closedMinelessCellQty) return;
 
     cell.isOpened = true;
+    gameStatus.closedMinelessCellQty -= 1;
+    gameStatus.isLost = !!cell.isMined;
 
     // recursively open group of cells with zero mines qty around
     if (!cell.minesQty && !cell.isMined) {
@@ -148,14 +164,12 @@ class Game extends React.Component {
     }
 
     let timerAction;
-    gameStatus = this.getGameStatus();
 
-    // todo 
     if (gameStatus.isLost) {
       this.openMines();
       timerAction = 'stop';
     } else {
-      timerAction = gameStatus.isWon ? 'stop' : 'launch';
+      timerAction = !gameStatus.closedMinelessCellQty ? 'stop' : 'launch';
       this.props.updateCellsGrid(updatedCellsGrid);
     }
 
@@ -172,7 +186,7 @@ class Game extends React.Component {
     event.preventDefault(); // disable context menu rendering
     let gameStatus = this.getGameStatus();
 
-    if (gameStatus.isWon || gameStatus.isLost) return;
+    if (!gameStatus.closedMinelessCellQty || gameStatus.isLost) return;
 
     let updatedCellsGrid = [...this.props.cellsGrid];
 
@@ -197,7 +211,7 @@ class Game extends React.Component {
 
   getGameStatus() {
     let result = {
-      isWon: false,
+      closedMinelessCellQty: 0,
       isLost: false
     };
     let openedCells = [];
@@ -206,7 +220,6 @@ class Game extends React.Component {
       for (let cell of rowCells) {
         if (cell.isMined && cell.isOpened) {
           result.isLost = true;
-          return result;
         }
 
         if (cell.isOpened) openedCells.push(cell);
@@ -214,7 +227,7 @@ class Game extends React.Component {
     }
 
     let { rowsQty, colsQty } = { ...this.props.config };
-    result.isWon = (rowsQty * colsQty - this.props.config.minesQty) === openedCells.length;
+    result.closedMinelessCellQty = (rowsQty * colsQty - this.props.config.minesQty) - openedCells.length;
 
     return result;
   }
@@ -232,7 +245,7 @@ class Game extends React.Component {
   }
 
   getMinesRemainQty() {
-    if (this.getGameStatus().isWon) return 0;
+    if (!this.getGameStatus().closedMinelessCellQty) return 0;
 
     let checkedMinesQty = 0;
 

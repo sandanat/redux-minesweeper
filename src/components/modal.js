@@ -11,6 +11,7 @@ class ModalForm extends React.Component {
       <Modal
         isOpen={this.props.modalIsOpen}
         onRequestClose={this.props.closeModal}
+        style={this.props.customStyles}
       >
         {this.props.children}
       </Modal>
