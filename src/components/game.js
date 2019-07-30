@@ -4,14 +4,14 @@ import PropTypes from 'prop-types';
 import constants from '../modules/constants';
 import randomInteger from '../modules/random-integer'
 import getGridSize from '../modules/get-grid-rows-and-cols-qty'
-import { GameField } from './basic-components';
+import GameField from './game-field';
 import Timer from '../containers/timer'
 
 class Game extends React.Component {
   constructor(props) {
     super(props);
 
-    this.openCell = this.openCell.bind(this);
+    this.clickCell = this.clickCell.bind(this);
     this.markCell = this.markCell.bind(this);
     this.initiateGame = this.initiateGame.bind(this);
   }
@@ -21,14 +21,14 @@ class Game extends React.Component {
   }
 
   componentDidUpdate() {
-    let {rowsQty: currRowsQty, colsQty: currColsQty} = getGridSize(
+    let { rowsQty: currRowsQty, colsQty: currColsQty } = getGridSize(
       this.props.cellsGrid
     );
 
-    if(
-      currRowsQty && currColsQty && 
+    if (
+      currRowsQty && currColsQty &&
       (currRowsQty !== this.props.config.rowsQty ||
-      currColsQty !== this.props.config.colsQty)
+        currColsQty !== this.props.config.colsQty)
     ) this.initiateGame();
   }
 
@@ -115,13 +115,13 @@ class Game extends React.Component {
       let perimCellColInd = colInd - (((cellI % 3) - 1));
       let row = cellsGrid[perimCellRowInd];
 
-      if(row) {
+      if (row) {
         cell = row[perimCellColInd];
-        
-        if(
+
+        if (
           cell &&
           (perimCellColInd !== colInd || perimCellRowInd !== rowInd)
-        )  {
+        ) {
           cell.rowInd = perimCellRowInd;
           cell.colInd = perimCellColInd;
           result.push(cell);
@@ -138,11 +138,15 @@ class Game extends React.Component {
    * @param {number} colInd cell column coordinate
    * @param {object} event click event
    */
-  // todo refactor this, too expensive operation
-  openCell(rowInd, colInd, event) {
-    let updatedCellsGrid = [...this.props.cellsGrid];
+  clickCell(rowInd, colInd, event) {
+    let openPerimeterCells = event.nativeEvent.ctrlKey;
+    let updatedCellsGrid = this.openCell(rowInd, colInd, openPerimeterCells);
 
-    let cell = updatedCellsGrid[rowInd][colInd];
+    updatedCellsGrid && this.props.updateCellsGrid(updatedCellsGrid);
+  }
+
+  openCell(rowInd, colInd, openPerimeterCells) {
+    let cell = this.props.cellsGrid[rowInd][colInd];
 
     if (cell.isOpened || cell.mark !== constants.marks.NONE) return;
 
@@ -163,17 +167,19 @@ class Game extends React.Component {
       );
     }
 
-    let timerAction;
+    let timerAction, updatedCellsGrid;
 
     if (gameStatus.isLost) {
-      this.openMines();
+      updatedCellsGrid = this.openMines();
       timerAction = 'stop';
     } else {
       timerAction = !gameStatus.closedMinelessCellQty ? 'stop' : 'launch';
-      this.props.updateCellsGrid(updatedCellsGrid);
+      updatedCellsGrid = [...this.props.cellsGrid];
     }
 
     this.props.setTimerAction(timerAction);
+
+    return updatedCellsGrid;
   }
 
   /**
@@ -184,11 +190,16 @@ class Game extends React.Component {
   */
   markCell(rowInd, colInd, event) {
     event.preventDefault(); // disable context menu rendering
+
+    let updatedCellsGrid = [...this.props.cellsGrid];
+    // The cell on which right click is occured
+    let currClickedCell = updatedCellsGrid[rowInd][colInd];
+
+    if (currClickedCell.isOpened) return;
+
     let gameStatus = this.getGameStatus();
 
     if (!gameStatus.closedMinelessCellQty || gameStatus.isLost) return;
-
-    let updatedCellsGrid = [...this.props.cellsGrid];
 
     let marksArr = [constants.marks.NONE];
 
@@ -196,8 +207,6 @@ class Game extends React.Component {
 
     if (this.props.config.useCellQuestionMark) marksArr.push(constants.marks.QUESTION);
 
-    // The cell on which right click is occured
-    let currClickedCell = updatedCellsGrid[rowInd][colInd];
     let currentMarkInd = marksArr.indexOf(
       currClickedCell.mark
     );
@@ -241,7 +250,7 @@ class Game extends React.Component {
       })
     })
 
-    this.props.updateCellsGrid(updatedCellsGrid);
+    return updatedCellsGrid;
   }
 
   getMinesRemainQty() {
@@ -262,10 +271,16 @@ class Game extends React.Component {
 
 
   render() {
+    let gameStatus = this.getGameStatus();
+    let smileSrc = "/smile-usual.ico";
+
+    if (gameStatus.isLost) smileSrc = "/smile-sad.ico";
+    if (!gameStatus.closedMinelessCellQty) smileSrc = "/smile-happy.ico";
+
     let header =
       <header>
 
-        <div className="grid-1-2">
+        <div className="grid-1-3">
           <button
             className="reset-game game-button"
             href="#"
@@ -275,7 +290,11 @@ class Game extends React.Component {
           </button>
         </div>
 
-        <div className="grid-1-2">
+        <div className="grid-1-3">
+          <img src={smileSrc} alt="smile" />
+        </div>
+
+        <div className="grid-1-3">
           <button
             className="config-game game-button"
             onClick={this.props.openConfigForm}
@@ -304,7 +323,7 @@ class Game extends React.Component {
       <div>
         {header}
         <GameField
-          handleLeftClick={this.openCell}
+          handleLeftClick={this.clickCell}
           handleRightClick={this.markCell}
           cellsGrid={this.props.cellsGrid}
         />

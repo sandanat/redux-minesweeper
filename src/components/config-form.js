@@ -20,10 +20,9 @@ function ConfigForm({
     },
     content: {
       position: "relative",
-      top: '100px',
+      top: '80px',
       left: "0",
-      right: "0",
-      transition: "all 3s ease-in"
+      right: "0"
     }
   };
 
@@ -77,7 +76,7 @@ function ConfigForm({
             1) Цель - открыть все ячейки без мин.<br />
             2) Левый клик - открыть ячейку.<br />
             3) Правый клик - поставить метку.<br />
-            4) Двойной левый клик - открыть ячейки по периметру.<br />
+            4) Правый, затем левый клик - открыть ячейки по периметру.<br />
           </div>
         </div>
         <footer>
