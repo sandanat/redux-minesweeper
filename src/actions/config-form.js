@@ -24,7 +24,7 @@ export const updateGameConfig = (isUseQuestionMark, level) => ({
 export const saveFormButtonHandler = () => {
   return (dispatch, getState) => {
     let state = getState();
-    let { useCellQuestionMark, selectedLevel } = { ...state.configForm };
+    let { useCellQuestionMark, selectedLevel } = state.configForm;
     
     dispatch(updateGameConfig(useCellQuestionMark, selectedLevel));
     dispatch(toggleConfigForm(false));

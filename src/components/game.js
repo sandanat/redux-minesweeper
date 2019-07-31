@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 import constants from '../modules/constants';
 import randomInteger from '../modules/random-integer'
-import getGridSize from '../modules/get-grid-rows-and-cols-qty'
 import GameField from './game-field';
 import Timer from '../containers/timer'
 
@@ -20,21 +19,19 @@ class Game extends React.Component {
     this.initiateGame();
   }
 
-  componentDidUpdate() {
-    let { rowsQty: currRowsQty, colsQty: currColsQty } = getGridSize(
-      this.props.cellsGrid
-    );
+  componentDidUpdate({ config: prevConfig }) {
+    let { rowsQty: prevRowsQty, colsQty: prevColsQty } = prevConfig;
 
     if (
-      currRowsQty && currColsQty &&
-      (currRowsQty !== this.props.config.rowsQty ||
-        currColsQty !== this.props.config.colsQty)
+      prevRowsQty && prevColsQty &&
+      (prevRowsQty !== this.props.config.rowsQty ||
+        prevColsQty !== this.props.config.colsQty)
     ) this.initiateGame();
   }
 
   initiateGame() {
 
-    let { rowsQty, colsQty } = { ...this.props.config };
+    let { rowsQty, colsQty } = this.props.config;
     let cellsGrid = this.getCellsGrid(rowsQty, colsQty)
 
     this.props.updateCellsGrid(cellsGrid);
@@ -63,8 +60,7 @@ class Game extends React.Component {
   }
 
   fillCellsWithMines(cellsGrid) {
-    let minedCellsGrid = [...cellsGrid];
-    let { rowsQty, colsQty } = { ...this.props.config };
+    let { rowsQty, colsQty } = this.props.config;
     let minedCells = {};
     const getCellKey = (ri, ci) => `${ri} / ${ci}`;
 
@@ -72,28 +68,26 @@ class Game extends React.Component {
       let ri = randomInteger(0, rowsQty - 1);
       let ci = randomInteger(0, colsQty - 1);
       minedCells[getCellKey(ri, ci)] = true;
-      minedCellsGrid[ri][ci].isMined = true;
+      cellsGrid[ri][ci].isMined = true;
     }
 
-    return minedCellsGrid;
+    return cellsGrid;
   }
 
   calcCellsMinesQty(minedCellsGrid) {
-    let calculatedCellsGrid = [...minedCellsGrid];
-
-    for (let ri in calculatedCellsGrid) {
-      for (let ci in calculatedCellsGrid[0]) {
+    for (let ri in minedCellsGrid) {
+      for (let ci in minedCellsGrid[0]) {
         ri = +ri;
         ci = +ci;
 
-        let cell = calculatedCellsGrid[ri][ci];
+        let cell = minedCellsGrid[ri][ci];
 
         if (cell.isMined) continue;
 
         let cellPerimeterCells = this.getCellPerimeterCells(
           ri,
           ci,
-          calculatedCellsGrid
+          minedCellsGrid
         );
 
         cell.minesQty = cellPerimeterCells.filter(cell => {
@@ -102,12 +96,11 @@ class Game extends React.Component {
       }
     }
 
-    return calculatedCellsGrid;
+    return minedCellsGrid;
   }
 
   // get cells surrounding a cell
   getCellPerimeterCells(rowInd, colInd, cellsGrid) {
-    cellsGrid = cellsGrid || this.props.cellsGrid;
     let result = [];
 
     for (let cell, cellI = 0; cellI < 9; cellI++) {
@@ -139,48 +132,54 @@ class Game extends React.Component {
    * @param {object} event click event
    */
   clickCell(rowInd, colInd, event) {
-    debugger;
     let openPerimeterCells = event.nativeEvent.ctrlKey;
-    let updatedCellsGrid = this.openCell(rowInd, colInd, openPerimeterCells);
-
-    updatedCellsGrid && this.props.updateCellsGrid(updatedCellsGrid);
-  }
-
-  openCell(rowInd, colInd, openPerimeterCells) {
-    let cell = this.props.cellsGrid[rowInd][colInd];
-
-    if (cell.isOpened || cell.mark !== constants.marks.NONE) return;
 
     let gameStatus = this.getGameStatus();
 
     if (gameStatus.isLost || !gameStatus.closedMinelessCellQty) return;
 
-    cell.isOpened = true;
-    gameStatus.closedMinelessCellQty -= 1;
-    gameStatus.isLost = !!cell.isMined;
+    let updatedCellsGrid = this.openCell([...this.props.cellsGrid], rowInd, colInd);
 
-    // recursively open group of cells with zero mines qty around
-    if (!cell.minesQty && !cell.isMined) {
-      let cellPerimeterCells = this.getCellPerimeterCells(rowInd, colInd);
+    if(openPerimeterCells) {
+      let cellPerimeterCells = this.getCellPerimeterCells(rowInd, colInd, updatedCellsGrid);
 
       cellPerimeterCells.forEach(cell =>
-        this.openCell(cell.rowInd, cell.colInd)
+        this.openCell(updatedCellsGrid, cell.rowInd, cell.colInd)
       );
     }
 
-    let timerAction, updatedCellsGrid;
+    updatedCellsGrid && this.props.updateCellsGrid(updatedCellsGrid);
+
+    gameStatus = this.getGameStatus();
+    let timerAction;
 
     if (gameStatus.isLost) {
-      updatedCellsGrid = this.openMines();
+      this.props.updateCellsGrid(this.openMines());
       timerAction = 'stop';
     } else {
       timerAction = !gameStatus.closedMinelessCellQty ? 'stop' : 'launch';
-      updatedCellsGrid = [...this.props.cellsGrid];
     }
 
     this.props.setTimerAction(timerAction);
+  }
 
-    return updatedCellsGrid;
+  openCell(cellsGrid, rowInd, colInd) {
+    let cell = cellsGrid[rowInd][colInd];
+
+    if (cell.isOpened || cell.mark !== constants.marks.NONE) return cellsGrid;
+
+    cell.isOpened = true;
+
+    // recursively open group of cells with zero mines qty around
+    if (!cell.minesQty && !cell.isMined) {
+      let cellPerimeterCells = this.getCellPerimeterCells(rowInd, colInd, cellsGrid);
+
+      cellPerimeterCells.forEach(cell =>
+        this.openCell(cellsGrid, cell.rowInd, cell.colInd)
+      );
+    }
+
+    return cellsGrid;
   }
 
   /**
@@ -224,7 +223,7 @@ class Game extends React.Component {
       closedMinelessCellQty: 0,
       isLost: false
     };
-    let openedCells = [];
+    let openedMinelessCells = [];
 
     for (let rowCells of this.props.cellsGrid) {
       for (let cell of rowCells) {
@@ -232,12 +231,12 @@ class Game extends React.Component {
           result.isLost = true;
         }
 
-        if (cell.isOpened && !cell.isMined) openedCells.push(cell);
+        if (cell.isOpened && !cell.isMined) openedMinelessCells.push(cell);
       }
     }
 
-    let { rowsQty, colsQty } = { ...this.props.config };
-    result.closedMinelessCellQty = (rowsQty * colsQty - this.props.config.minesQty) - openedCells.length;
+    let { rowsQty, colsQty } = this.props.config;
+    result.closedMinelessCellQty = (rowsQty * colsQty - this.props.config.minesQty) - openedMinelessCells.length;
 
     return result;
   }
@@ -246,7 +245,7 @@ class Game extends React.Component {
     let updatedCellsGrid = this.props.cellsGrid.map(rowCells => {
       return rowCells.map(cell => {
         if (cell.isMined && cell.mark !== constants.marks.FLAG) cell.isOpened = true;
-        if(
+        if (
           !cell.isMined &&
           cell.mark === constants.marks.FLAG &&
           !cell.isOpened
@@ -271,14 +270,14 @@ class Game extends React.Component {
         if (cell.mark === constants.marks.FLAG) {
           checkedMinesQty += 1;
 
-          if(cell.isWrongFlag) wrongCheckedMinesQty += 1;
+          if (cell.isWrongFlag) wrongCheckedMinesQty += 1;
         }
       }
     }
 
     let minesRemainQty = this.props.config.minesQty - checkedMinesQty;
 
-    if(gameStatus.isLost) minesRemainQty += wrongCheckedMinesQty;
+    if (gameStatus.isLost) minesRemainQty += wrongCheckedMinesQty;
 
     return minesRemainQty;
   }
@@ -288,9 +287,9 @@ class Game extends React.Component {
     let gameStatus = this.getGameStatus();
     let smileSrc = "/smile-usual.ico";
 
-    if (gameStatus.isLost) smileSrc = "/smile-sad.ico"; else {
-      if (!gameStatus.closedMinelessCellQty) smileSrc = "/smile-happy.ico";
-    }
+    if (gameStatus.isLost) smileSrc = "/smile-sad.ico";
+
+    if (!gameStatus.closedMinelessCellQty) smileSrc = "/smile-happy.ico";
 
     let header =
       <header>
