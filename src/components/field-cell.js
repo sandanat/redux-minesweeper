@@ -13,7 +13,8 @@ export default class FieldCell extends React.Component {
   shouldComponentUpdate(nextProps) {
     if (
       this.props.cell.isOpened === nextProps.cell.isOpened &&
-      this.props.cell.mark === nextProps.cell.mark
+      this.props.cell.mark === nextProps.cell.mark &&
+      this.props.cell.isWrongFlag === nextProps.cell.isWrongFlag
     ) return false;
 
     return true;
@@ -44,14 +45,20 @@ export default class FieldCell extends React.Component {
           break;
       }
     }
+    
+    let className = " field-cell ";
+    
+    if(cell.isOpened) {
+      className += cell.isMined ?
+        " field-cell-opened-mined " :
+        " field-cell-opened ";
+    } else className += " field-cell-closed ";
+
+    if(cell.isWrongFlag) className += " field-cell-wrong-flag ";
 
     return (
       <div
-        className={
-          "field-cell " +
-          (cell.isOpened ? "field-cell-opened " : "field-cell-closed") +
-          (cell.isOpened && cell.isMined ? "field-cell-opened-mined" : " ")
-        }
+        className={className}
         onClick={this.props.handleLeftClick}
         onContextMenu={this.props.handleRightClick}
         ref={this.cellRef}
@@ -67,7 +74,8 @@ FieldCell.propTypes = {
     isOpened: PropTypes.bool,
     mark: PropTypes.string,
     isMined: PropTypes.bool,
-    minesQty: PropTypes.number
+    minesQty: PropTypes.number,
+    isWrongFlag: PropTypes.bool
   }),
   handleLeftClick: PropTypes.func.isRequired,
   handleRightClick: PropTypes.func.isRequired

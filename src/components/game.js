@@ -139,6 +139,7 @@ class Game extends React.Component {
    * @param {object} event click event
    */
   clickCell(rowInd, colInd, event) {
+    debugger;
     let openPerimeterCells = event.nativeEvent.ctrlKey;
     let updatedCellsGrid = this.openCell(rowInd, colInd, openPerimeterCells);
 
@@ -231,7 +232,7 @@ class Game extends React.Component {
           result.isLost = true;
         }
 
-        if (cell.isOpened) openedCells.push(cell);
+        if (cell.isOpened && !cell.isMined) openedCells.push(cell);
       }
     }
 
@@ -245,6 +246,11 @@ class Game extends React.Component {
     let updatedCellsGrid = this.props.cellsGrid.map(rowCells => {
       return rowCells.map(cell => {
         if (cell.isMined && cell.mark !== constants.marks.FLAG) cell.isOpened = true;
+        if(
+          !cell.isMined &&
+          cell.mark === constants.marks.FLAG &&
+          !cell.isOpened
+        ) cell.isWrongFlag = true;
 
         return cell;
       })
@@ -254,17 +260,25 @@ class Game extends React.Component {
   }
 
   getMinesRemainQty() {
-    if (!this.getGameStatus().closedMinelessCellQty) return 0;
+    let gameStatus = this.getGameStatus();
+    if (!gameStatus.closedMinelessCellQty) return 0;
 
     let checkedMinesQty = 0;
+    let wrongCheckedMinesQty = 0;
 
     for (let rowCells of this.props.cellsGrid) {
       for (let cell of rowCells) {
-        if (cell.mark === constants.marks.FLAG) checkedMinesQty += 1;
+        if (cell.mark === constants.marks.FLAG) {
+          checkedMinesQty += 1;
+
+          if(cell.isWrongFlag) wrongCheckedMinesQty += 1;
+        }
       }
     }
 
     let minesRemainQty = this.props.config.minesQty - checkedMinesQty;
+
+    if(gameStatus.isLost) minesRemainQty += wrongCheckedMinesQty;
 
     return minesRemainQty;
   }
@@ -274,8 +288,9 @@ class Game extends React.Component {
     let gameStatus = this.getGameStatus();
     let smileSrc = "/smile-usual.ico";
 
-    if (gameStatus.isLost) smileSrc = "/smile-sad.ico";
-    if (!gameStatus.closedMinelessCellQty) smileSrc = "/smile-happy.ico";
+    if (gameStatus.isLost) smileSrc = "/smile-sad.ico"; else {
+      if (!gameStatus.closedMinelessCellQty) smileSrc = "/smile-happy.ico";
+    }
 
     let header =
       <header>
