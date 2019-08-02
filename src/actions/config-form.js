@@ -1,4 +1,17 @@
 import constants from '../modules/constants';
+import getGameLevel from '../modules/get-game-level'
+
+export const openConfigForm = () => {
+  return (dispatch, getState) => {
+    let state = getState();
+    let { rowsQty, colsQty, minesQty, useCellQuestionMark } = state.config;
+    let level = getGameLevel(rowsQty, colsQty, minesQty);
+
+    dispatch(selectGameLevel(level));
+    dispatch(toggleUseQuestionMark(useCellQuestionMark));
+    dispatch(toggleConfigForm(true))
+  }
+}
 
 export const toggleConfigForm = isOpen => ({
   type: constants.configForm.TOGGLE_CONFIG_FORM,
@@ -25,7 +38,7 @@ export const saveFormButtonHandler = () => {
   return (dispatch, getState) => {
     let state = getState();
     let { useCellQuestionMark, selectedLevel } = state.configForm;
-    
+
     dispatch(updateGameConfig(useCellQuestionMark, selectedLevel));
     dispatch(toggleConfigForm(false));
   }

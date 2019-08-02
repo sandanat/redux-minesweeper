@@ -3,6 +3,7 @@ import React from 'react';
 import Modal from './modal';
 import Toggle from './toggle';
 import Radiobutton from './radiobutton';
+import consts from '../modules/constants';
 
 function ConfigForm({
   modalIsOpen,
@@ -45,14 +46,14 @@ function ConfigForm({
             <span>Уровень</span><br />
             <Radiobutton
               name="radio-button-game-level"
-              id="junior"
+              id={consts.gameLevels.JUNIOR}
               text="9x9, 10 мин"
               checkedId={selectedGameLevel}
               onChangeHandler={selectLevel}
             />
             <Radiobutton
               name="radio-button-game-level"
-              id="middle"
+              id={consts.gameLevels.MIDDLE}
               text="16x16, 40 мин"
               checkedId={selectedGameLevel}
               onChangeHandler={selectLevel}
@@ -61,7 +62,7 @@ function ConfigForm({
               name="radio-button-game-level"
               checkedId={selectedGameLevel}
               onChangeHandler={selectLevel}
-              id="seniour"
+              id={consts.gameLevels.SENIOR}
               text="16x30, 99 мин"
             />
           </div>

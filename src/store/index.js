@@ -2,6 +2,10 @@ import { createStore, applyMiddleware, compose } from 'redux';
 import thunk from 'redux-thunk';
 
 import rootReducer from '../reducers';
+import consts from '../modules/constants'
+import getGameConfig from '../modules/get-game-config';
+
+let level = consts.gameLevels.MIDDLE;
 
 export default () => createStore(
   rootReducer,
@@ -11,12 +15,10 @@ export default () => createStore(
     configForm: {
       isOpen: false,
       useCellQuestionMark: false,
-      selectedLevel: 'middle'
+      selectedLevel: level
     },
     config: {
-      rowsQty: 16,
-      colsQty: 16,
-      minesQty: 40,
+      ...getGameConfig(level),
       useCellQuestionMark: false
     },
     cellsGrid: [[]],
